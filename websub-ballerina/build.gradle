@@ -229,13 +229,19 @@ task ballerinaBuild {
 
     doLast {
         // Build and populate caches
+
+        def debugParams = ""
+        if (project.hasProperty("debug")) {
+            debugParams = "--debug ${project.findProperty("debug")}"
+        }
+
         exec {
             workingDir project.projectDir
             environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                commandLine 'cmd', '/c', "$distributionBinPath/ballerina.bat build -c && exit %%ERRORLEVEL%%"
+                commandLine 'cmd', '/c', "$distributionBinPath/ballerina.bat build -c ${debugParams} && exit %%ERRORLEVEL%%"
             } else {
-                commandLine 'sh', '-c', "$distributionBinPath/ballerina build -c"
+                commandLine 'sh', '-c', "$distributionBinPath/ballerina build -c ${debugParams}"
             }
         }
         copy {
